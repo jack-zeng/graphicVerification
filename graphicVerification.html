@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>canvas图形验证码</title>
+</head>
+<body>
+
+<style>
+*{padding:0; margin:0;}
+.cont{margin: 0 auto; width:240px; margin-top:20px;}
+#graphicVerification{border:1px solid #ccc;display:block;}
+p{margin-top:20px;}
+p input{width:100px; height:46px;}
+p button{ height:100%;width:100px;height:50px; }
+</style>
+<div class="cont">
+<canvas id="graphicVerification" width="200px" height="50px">
+  您的游览器不支持canvas</canvas>
+ <p> <input type="text" placeholder="请输入验证码" class="verificationCode">
+<button class="but"  class="but" type="button">验证</button></p>
+</div>
+<script>
+
+(function(win){
+
+
+    let graphic=document.getElementById("graphicVerification");//获取canvas
+    let context=graphic.getContext("2d");//获取上下文
+    win.strArray=[];
+    /**
+     * getColors()
+     * @return numberArray 返回颜色值  
+     */
+    let getColors=function(){
+        let [r,g,b,a]=[Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.random().toFixed(1)];
+        return [r,g,b,a];
+    }
+    
+   /**
+     * getText()
+     * @return string 返回随机大小写字母或数字  
+     */
+   function getText(){
+      let strArr = [];
+      for(let i=65;i<91;i++){//大写字母
+          strArr.push(String.fromCharCode(i));
+      }
+      for(let i=97;i<123;i++){//小写字母
+          strArr.push(String.fromCharCode(i));
+      }
+      for(let i=0;i<=9;i++){//数字
+          strArr.push(i);
+      }
+      let strArrLength=strArr.length;
+      return strArr[Math.floor(Math.random()*strArrLength)];
+      }
+
+
+   win.graphicVerification=function(){
+        let graphicWidth=graphic.width,
+            graphicHeight=graphic.height,
+            [r,g,b,a]=getColors();
+            context.clearRect(0,0,graphicWidth,graphicHeight);
+            context.fillStyle="rgba("+r+","+g+","+b+","+a+")";
+            context.fillRect(0,0,graphicWidth,graphicHeight);//背景矩形
+            for(let i=0;i<=50;i++){//增加圆
+                let [red,green,blue]=[Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255)];
+                context.beginPath();
+                context.arc(Math.floor(Math.random()*graphicWidth),Math.floor(Math.random()*graphicHeight),2,0,2*Math.PI);
+                context.fillStyle="rgb("+red+","+green+","+blue+")";
+                context.closePath();
+                context.fill();
+                context.closePath();
+            }
+            //文字填充;
+                context.font="40px Georgia";
+                context.fillStyle="rgb("+getColors()[0]+","+getColors()[1]+","+getColors()[2]+")";
+                strArray[0]=getText();
+                context.fillText(strArray[0],10,35);
+
+                context.fillStyle="rgb("+getColors()[0]+","+getColors()[1]+","+getColors()[2]+")";
+                strArray[1]=getText();
+                context.fillText(strArray[1],65,35);
+
+                context.fillStyle="rgb("+getColors()[0]+","+getColors()[1]+","+getColors()[2]+")";
+                strArray[2]=getText();
+                context.fillText(strArray[2],120,35);
+
+                context.fillStyle="rgb("+getColors()[0]+","+getColors()[1]+","+getColors()[2]+")";
+                strArray[3]=getText();
+                context.fillText(strArray[3],170,35);
+    }
+
+    graphicVerification();
+    graphic.addEventListener("click",graphicVerification)
+  
+}(window))
+
+
+  document.querySelector(".but").addEventListener("click",function(){
+      let verificationCode=document.querySelector(".verificationCode");
+      let canvasCode=strArray.join("").toLowerCase();
+      if(verificationCode.value==''){
+          alert("验证码为空");
+          return false;
+      }else if(verificationCode.value===canvasCode){
+          console.log(verificationCode.value);
+          alert("验证成功");
+      }else{
+          alert("验证失败");
+          verificationCode.value='';
+          graphicVerification();
+      }
+
+  })
+
+</script>  
+</body>
+</html>
